@@ -103,7 +103,7 @@ const styles = {
   }),
 }
 
-const DEFAULT_OPTION_TITLES = ['Copy Text', 'Cancel']
+const DEFAULT_OPTION_TITLES = ['Copy Text', 'Bookmark', 'Unbookmark', 'Report', 'Cancel']
 
 export type RenderMessageImageProps<TMessage extends IMessage> = Omit<
   BubbleProps<TMessage>,
@@ -252,10 +252,7 @@ export default class Bubble<
       this.props.onLongPress(this.context, this.props.currentMessage)
     } else if (currentMessage && currentMessage.text) {
       const { optionTitles } = this.props
-      const options =
-        optionTitles && optionTitles.length > 0
-          ? optionTitles.slice(0, 2)
-          : DEFAULT_OPTION_TITLES
+      const options =  DEFAULT_OPTION_TITLES;
       const cancelButtonIndex = options.length - 1
       this.context.actionSheet().showActionSheetWithOptions(
         {
@@ -265,8 +262,20 @@ export default class Bubble<
         (buttonIndex: number) => {
           switch (buttonIndex) {
             case 0:
-              Clipboard.setString(currentMessage.text)
-              break
+				Clipboard.setString(currentMessage.text)
+				break;
+			 case 1:
+				favMessages.push(currentMessage);
+				break;
+			 case 2:
+				if(favMessages.includes(currentMessage)) {
+					favMessages.splice(favMessages.indexOf(currentMessage),1);
+				  }
+				break;
+			 case 3:
+				this.props.navigation.navigate("Report",{
+					flaggedMsg: currentMessage.text
+				  });
             default:
               break
           }
